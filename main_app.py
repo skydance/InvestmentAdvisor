@@ -66,7 +66,7 @@ with right_column:
             "messages": [
                 {"role": "system", "content": "You are an expert financial advisor."},
                 {"role": "user", "content": f"""
-        Based on the following user profile, provide detailed investment advice including specific stock recommendations, bond recommendations, mutual funds/ETFs, asset allocation strategy, risk management, and income generation strategies.
+        Based on the following user profile, provide detailed preferred investments advice asset allocation strategy, and risk management.
         If the Preferred Investments is chosen, it is not a real estate stocks, but the actual real estate.
 
         User Profile:
@@ -82,7 +82,7 @@ with right_column:
         Investment Goals: {", ".join(investment_goals)}
         Investment Horizon: {investment_horizon}
         Preferred Investments: {", ".join(preferred_investments)}
-        Country: {country}
+        Preferred Investments Country: {country}
         """}]
         }
 
