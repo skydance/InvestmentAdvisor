@@ -66,7 +66,7 @@ with right_column:
             "messages": [
                 {"role": "system", "content": "You are an expert financial advisor."},
                 {"role": "user", "content": f"""
-        Based on the following user profile, provide detailed preferred investments including stock, bonds, cryptocurrency (if chosen) recommendations advice asset allocation strategy, and risk management.
+        Based on the following user profile, provide detailed preferred investments including stock (consider price trends), bonds, cryptocurrency (if chosen) recommendations advice asset allocation strategy, and risk management.
         If the Preferred Investments is chosen, it is not a real estate stocks, but the actual real estate.
 
         User Profile:
