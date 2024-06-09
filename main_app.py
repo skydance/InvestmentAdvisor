@@ -30,7 +30,7 @@ with left_column:
         investment_goals = st.multiselect("Investment Goals", ["Retirement", "Education", "Wealth Accumulation", "Short-term Needs"])
         investment_horizon = st.selectbox("Investment Horizon", ["Short-term (1-3 years)", "Medium-term (3-5 years)", "Long-term (5+ years)"])
         preferred_investments = st.multiselect("Preferred Investment Types", ["Stocks", "Bonds", "Mutual Funds", "Cryptocurrency"])
-        country = st.selectbox("Prefered Country to invest", ["United States",, "Singapore", "Australia", "Indonesia", "Other"])
+        country = st.selectbox("Prefered Country to invest", ["United States", "Singapore", "Australia", "Indonesia", "Other"])
         submit_button = st.form_submit_button(label='Submit')
         
 with right_column:
