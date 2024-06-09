@@ -29,8 +29,8 @@ with left_column:
         risk_tolerance = st.selectbox("Risk Tolerance", ["Conservative", "Moderate", "Aggressive"])
         investment_goals = st.multiselect("Investment Goals", ["Retirement", "Education", "Wealth Accumulation", "Short-term Needs"])
         investment_horizon = st.selectbox("Investment Horizon", ["Short-term (1-3 years)", "Medium-term (3-5 years)", "Long-term (5+ years)"])
-        preferred_investments = st.multiselect("Preferred Investment Types", ["Stocks", "Bonds", "Real Estate", "Mutual Funds", "ETFs", "Cryptocurrency"])
-        country = st.selectbox("Prefered Country to invest", ["United States", "Canada", "Singapore", "Australia", "Indonesia", "Other"])
+        preferred_investments = st.multiselect("Preferred Investment Types", ["Stocks", "Bonds", "Mutual Funds", "Cryptocurrency"])
+        country = st.selectbox("Prefered Country to invest", ["United States",, "Singapore", "Australia", "Indonesia", "Other"])
         submit_button = st.form_submit_button(label='Submit')
         
 with right_column:
@@ -66,7 +66,7 @@ with right_column:
             "messages": [
                 {"role": "system", "content": "You are an expert financial advisor."},
                 {"role": "user", "content": f"""
-        Based on the following user profile, provide detailed preferred investments advice asset allocation strategy, and risk management.
+        Based on the following user profile, provide detailed preferred investments including stock, bonds, cryptocurrency (if chosen) recommendations advice asset allocation strategy, and risk management.
         If the Preferred Investments is chosen, it is not a real estate stocks, but the actual real estate.
 
         User Profile:
