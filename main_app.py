@@ -9,7 +9,7 @@ API_KEY = st.secrets["API_KEY"]
 
 # Configure AWS S3
 s3 = boto3.client('s3')
-BUCKET_NAME = st.secrets["API_KEY"]
+BUCKET_NAME = st.secrets["BUCKET_NAME"]
 
 st.title("AI-Powered Virtual Financial Assistant using GPT4o")
 left_column, right_column = st.columns(2)
