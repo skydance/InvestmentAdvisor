@@ -127,7 +127,7 @@ with right_column:
             else:
                 st.write("Error:", response.status_code)
                 st.write(response.text)
-         else:
+        else:
             st.error("reCAPTCHA verification failed. Please try again.")
     
 
