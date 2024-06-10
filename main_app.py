@@ -132,4 +132,4 @@ with right_column:
         captcha_text, captcha_image = generate_captcha()
         st.session_state['captcha_text'] = captcha_text
         st.session_state['captcha_image'] = captcha_image
-        st.experimental_rerun()
+        st._rerun()
