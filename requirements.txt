@@ -1,7 +1,8 @@
 boto3
 s3fs
 st-files-connection
-captcha.image 
+pillow
+captcha
 random
 base64
 string
