@@ -32,8 +32,8 @@ def refresh_captcha():
     st.session_state['captcha_image'] = captcha_image
 
 # Initial CAPTCHA generation
-#if 'captcha_text' not in st.session_state:
-#    refresh_captcha()
+if 'captcha_text' not in st.session_state:
+    refresh_captcha()
 
 
 # Configure AWS S3
@@ -42,8 +42,7 @@ BUCKET_NAME = st.secrets["BUCKET_NAME"]
 
 st.title("AI-Powered Virtual Financial Assistant using GPT4o")
 left_column, right_column = st.columns(2)
-if st.button('Refresh CAPTCHA'):
-    refresh_captcha()
+
 # User Profile Form
 with left_column:
     with st.form(key='profile_form'):
