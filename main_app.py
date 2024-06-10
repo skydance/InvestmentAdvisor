@@ -29,8 +29,7 @@ if 'captcha_text' not in st.session_state:
     st.session_state['captcha_text'] = captcha_text
     st.session_state['captcha_image'] = captcha_image
 
-# Display CAPTCHA
-st.markdown(f"![CAPTCHA](data:image/png;base64,{st.session_state['captcha_image']})")
+
 
 
 # Configure AWS S3
@@ -57,6 +56,8 @@ with left_column:
         investment_horizon = st.selectbox("Investment Horizon", ["Short-term (1-3 years)", "Medium-term (3-5 years)", "Long-term (5+ years)"])
         preferred_investments = st.multiselect("Preferred Investment Types", ["Stocks", "Bonds", "Mutual Funds", "Cryptocurrency"])
         country = st.selectbox("Prefered Country to invest", ["United States", "Singapore", "Australia", "Indonesia", "Other"])
+        # Display CAPTCHA
+        st.markdown(f"![CAPTCHA](data:image/png;base64,{st.session_state['captcha_image']})")
         captcha_input = st.text_input("Enter CAPTCHA")
         submit_button = st.form_submit_button(label='Submit')
         
@@ -127,7 +128,6 @@ with right_column:
                 st.write(response.text)
     else:
         st.error("CAPTCHA verification failed. Please try again.")
-
         # Regenerate CAPTCHA if failed
         captcha_text, captcha_image = generate_captcha()
         st.session_state['captcha_text'] = captcha_text
