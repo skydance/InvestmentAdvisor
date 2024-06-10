@@ -71,7 +71,7 @@ with left_column:
         
 with right_column:
     if submit_button:
-        if captcha_input.lower() == st.session_state['captcha_text']:
+        if captcha_input == st.session_state['captcha_text']:
             user_profile = {
                 "name": name,
                 "age": age,
