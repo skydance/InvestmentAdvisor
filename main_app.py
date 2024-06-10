@@ -22,6 +22,15 @@ recaptcha_html = f"""
     }}
 </script>
 """
+# CSS to hide the reCAPTCHA response input
+hide_input_css = """
+<style>
+    .hidden-input {
+        display: none;
+    }
+</style>
+"""
+st.markdown(hide_input_css, unsafe_allow_html=True)
 
 # Configure AWS S3
 s3 = boto3.client('s3')
@@ -47,94 +56,88 @@ with left_column:
         investment_horizon = st.selectbox("Investment Horizon", ["Short-term (1-3 years)", "Medium-term (3-5 years)", "Long-term (5+ years)"])
         preferred_investments = st.multiselect("Preferred Investment Types", ["Stocks", "Bonds", "Mutual Funds", "Cryptocurrency"])
         country = st.selectbox("Prefered Country to invest", ["United States", "Singapore", "Australia", "Indonesia", "Other"])
-        # Add reCAPTCHA
+       # Add reCAPTCHA and hidden input for the response
         st.markdown(recaptcha_html, unsafe_allow_html=True)
-        recaptcha_response = st.text_input("recaptcha_response", type="hidden")
+        recaptcha_response = st.text_input("recaptcha_response", type="default", key="recaptcha_response_input", value="", class_="hidden-input")
         submit_button = st.form_submit_button(label='Submit')
         
 with right_column:
     if submit_button:
-        # Get the reCAPTCHA response token
-        recaptcha_response = st.text_input("recaptcha_response", type="hidden")
-
-        # Verify the reCAPTCHA
-        recaptcha_verification = requests.post(
-            "https://www.google.com/recaptcha/api/siteverify",
-            data={
-                "secret": RECAPTCHA_SECRET_KEY,
-                "response": recaptcha_response
-            }
-        )
-        recaptcha_result = recaptcha_verification.json()
-
-        if recaptcha_result.get("success"):
-            user_profile = {
-                "name": name,
-                "age": age,
-                "employment_status": employment_status,
-                "annual_income": annual_income,
-                "monthly_expenses": monthly_expenses,
-                "savings": savings,
-                "investments": investments,
-                "risk_tolerance": risk_tolerance,
-                "investment_goals": investment_goals,
-                "investment_horizon": investment_horizon,
-                "preferred_investments": preferred_investments,
-                "current_debts": current_debts,
-                "country": country
-            }
-            # Save user profile to S3
-            timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
-            file_name = f"user_profile_{timestamp}.json"
-            s3.put_object(
-                Bucket=BUCKET_NAME,
-                Key=file_name,
-                Body=json.dumps(user_profile),
-                ContentType='application/json'
+        if recaptcha_response:
+            # Verify the reCAPTCHA response
+            recaptcha_verification = requests.post(
+                "https://www.google.com/recaptcha/api/siteverify",
+                data={
+                    "secret": RECAPTCHA_SECRET_KEY,
+                    "response": recaptcha_response
+                }
             )
+            recaptcha_result = recaptcha_verification.json()
 
-    
-            data_to_send = {
-                "model": "gpt-4o",
-                "messages": [
-                    {"role": "system", "content": "You are an expert financial advisor."},
-                    {"role": "user", "content": f"""
-            Based on the following user profile, provide detailed preferred investments including stock (consider price trends), bonds, cryptocurrency (if chosen) recommendations advice asset allocation strategy, and risk management.
-            If the Preferred Investments is chosen, it is not a real estate stocks, but the actual real estate.
+            if recaptcha_result.get("success"):
+                user_profile = {
+                    "name": name,
+                    "age": age,
+                    "employment_status": employment_status,
+                    "annual_income": annual_income,
+                    "monthly_expenses": monthly_expenses,
+                    "savings": savings,
+                    "investments": investments,
+                    "risk_tolerance": risk_tolerance,
+                    "investment_goals": investment_goals,
+                    "investment_horizon": investment_horizon,
+                    "preferred_investments": preferred_investments,
+                    "current_debts": current_debts,
+                    "country": country
+                }
 
-            User Profile:
-            Name: {name}
-            Age: {age}
-            Employment Status: {employment_status}
-            Annual Income: ${annual_income:,}
-            Monthly Expenses: ${monthly_expenses:,}
-            Current Savings: ${savings:,}
-            Current Investments: ${investments:,}
-            Current Debts: ${current_debts:,}
-            Risk Tolerance: {risk_tolerance}
-            Investment Goals: {", ".join(investment_goals)}
-            Investment Horizon: {investment_horizon}
-            Preferred Investments: {", ".join(preferred_investments)}
-            Preferred Investments Country: {country}
-            """}]
-            }
+                st.write("User Profile Submitted")
+                st.json(user_profile)
 
-            headers = {
-                "Authorization": f"Bearer {API_KEY}",
-                "Content-Type": "application/json"
-            }
+                # Prepare data to send to the OpenAI API
+                data_to_send = {
+                    "model": "gpt-4",
+                    "messages": [
+                        {"role": "system", "content": "You are a financial advisor who provides detailed and specific investment advice based on user profiles."},
+                        {"role": "user", "content": f"""
+                        Provide detailed investment advice based on the following user profile:
 
-            response = requests.post(API_ENDPOINT, headers=headers, json=data_to_send)
+                        Name: {name}
+                        Age: {age}
+                        Employment Status: {employment_status}
+                        Annual Income: ${annual_income:,}
+                        Monthly Expenses: ${monthly_expenses:,}
+                        Current Savings: ${savings:,}
+                        Current Investments: ${investments:,}
+                        Current Debts: ${current_debts:,}
+                        Risk Tolerance: {risk_tolerance}
+                        Investment Goals: {", ".join(investment_goals)}
+                        Investment Horizon: {investment_horizon}
+                        Preferred Investments: {", ".join(preferred_investments)}
+                        Country: {country}
 
-            if response.status_code == 200:
-                response_data = response.json()
-                investment_advice = response_data['choices'][0]['message']['content']
-                st.write("Investment Advice:")
-                st.write(investment_advice)
+                        Please include specific stock recommendations, bond recommendations, mutual funds/ETFs, asset allocation strategy, risk management, tax efficiency, and income generation strategies.
+                        """}
+                    ]
+                }
+
+                headers = {
+                    "Authorization": f"Bearer {API_KEY}",
+                    "Content-Type": "application/json"
+                }
+
+                # Send the request to the OpenAI API
+                response = requests.post(API_ENDPOINT, headers=headers, json=data_to_send)
+                
+                if response.status_code == 200:
+                    response_data = response.json()
+                    investment_advice = response_data['choices'][0]['message']['content']
+                    st.write("Investment Advice:")
+                    st.write(investment_advice)
+                else:
+                    st.write("Error:", response.status_code)
+                    st.write(response.text)
             else:
-                st.write("Error:", response.status_code)
-                st.write(response.text)
-        else:
-            st.error("reCAPTCHA verification failed. Please try again.")
+                st.error("reCAPTCHA verification failed. Please try again.")
     else:
-            st.error("reCAPTCHA token missing. Please complete the CAPTCHA.")
+        st.error("reCAPTCHA token missing. Please complete the CAPTCHA.")
