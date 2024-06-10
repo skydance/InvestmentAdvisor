@@ -71,7 +71,9 @@ with left_column:
         
 with right_column:
     if submit_button:
+        st.write("captcha_text")
         st.session_state['captcha_text']
+        st.write(captcha_input)
         if captcha_input == st.session_state['captcha_text']:
             user_profile = {
                 "name": name,
