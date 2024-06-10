@@ -1,9 +1,9 @@
 boto3
 s3fs
 st-files-connection
-ImageCaptcha
+captcha.image 
 random
 base64
 string
-BytesIO
+io
 json
