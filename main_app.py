@@ -32,8 +32,8 @@ def refresh_captcha():
     st.session_state['captcha_image'] = captcha_image
 
 # Initial CAPTCHA generation
-if 'captcha_text' not in st.session_state:
-    refresh_captcha()
+#if 'captcha_text' not in st.session_state:
+#    refresh_captcha()
 
 
 # Configure AWS S3
