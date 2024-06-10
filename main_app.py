@@ -15,13 +15,14 @@ API_KEY = st.secrets["API_KEY"]
 
 # Function to generate CAPTCHA
 def generate_captcha():
-    image = ImageCaptcha()
-    captcha_text = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
+    image = ImageCaptcha(width=280, height=90)  # Adjust dimensions for better readability
+    captcha_text = ''.join(random.choices(string.ascii_uppercase + string.digits, k=5))
     captcha_image = image.generate_image(captcha_text)
     buffered = BytesIO()
     captcha_image.save(buffered, format="PNG")
     img_str = base64.b64encode(buffered.getvalue()).decode()
     return captcha_text, img_str
+
 # Refresh CAPTCHA
 def refresh_captcha():
     captcha_text, captcha_image = generate_captcha()
@@ -68,7 +69,7 @@ with left_column:
         
 with right_column:
     if submit_button:
-        if captcha_input == st.session_state['captcha_text']:
+        if captcha_input.upper() == st.session_state['captcha_text']:
             user_profile = {
                 "name": name,
                 "age": age,
@@ -84,6 +85,15 @@ with right_column:
                 "current_debts": current_debts,
                 "country": country
             }
+            # Save user profile to S3
+            timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+            file_name = f"user_profile_{timestamp}.json"
+            s3.put_object(
+                Bucket=BUCKET_NAME,
+                Key=file_name,
+                Body=json.dumps(user_profile),
+                ContentType='application/json'
+            )
              # Prepare data to send to the OpenAI API
             data_to_send = {
                 "model": "gpt-4o",
