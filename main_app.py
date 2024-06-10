@@ -60,9 +60,11 @@ with left_column:
         investment_horizon = st.selectbox("Investment Horizon", ["Short-term (1-3 years)", "Medium-term (3-5 years)", "Long-term (5+ years)"])
         preferred_investments = st.multiselect("Preferred Investment Types", ["Stocks", "Bonds", "Mutual Funds", "Cryptocurrency"])
         country = st.selectbox("Prefered Country to invest", ["United States", "Singapore", "Australia", "Indonesia", "Other"])
-        # Display CAPTCHA
+    
+        
+        # Display CAPTCHA and refresh button inside the form
         st.markdown(f"![CAPTCHA](data:image/png;base64,{st.session_state['captcha_image']})")
-        st.text_input(st.session_state['captcha_text'])
+        st.button('Refresh CAPTCHA', on_click=refresh_captcha)
         captcha_input = st.text_input("Enter CAPTCHA")
         submit_button = st.form_submit_button(label='Submit')
     
@@ -74,7 +76,7 @@ with right_column:
         st.session_state['captcha_text']
         st.write("captcha_input:")
         st.write(captcha_input)
-        if captcha_input == st.session_state['captcha_text']:
+        if captcha_input.lower() == st.session_state['captcha_text'].lower():
             user_profile = {
                 "name": name,
                 "age": age,
@@ -147,5 +149,5 @@ with right_column:
             st.error("CAPTCHA verification failed. Please try again.")
             # Regenerate CAPTCHA if failed
             refresh_captcha()
-            #st.rerun()
+            st.rerun()
         
