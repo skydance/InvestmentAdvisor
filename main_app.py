@@ -66,13 +66,14 @@ with left_column:
         st.markdown(f"![CAPTCHA](data:image/png;base64,{st.session_state['captcha_image']})")
         refresh_captcha = st.form_submit_button(label='Refresh CAPTCHA')
     
-        if refresh_captcha:
-            refresh_captcha()
-            st.rerun()
+        
         captcha_input = st.text_input("Enter CAPTCHA")
         submit_button = st.form_submit_button(label='Submit')
     
 with right_column:
+    if refresh_captcha:
+            refresh_captcha()
+            st.rerun()
     if submit_button:
         st.write("captcha_text:")
         st.session_state['captcha_text']
