@@ -60,85 +60,93 @@ with left_column:
         st.markdown(recaptcha_html, unsafe_allow_html=True)
         recaptcha_response = st.text_input("recaptcha_response", type="default", value="", key="recaptcha_response_input")
 
-        submit_button = st.form_submit_button(label='Submit')
+        # Custom submit button
+        if st.form_submit_button(label='Submit'):
+            st.markdown(
+                f"""
+                <script>
+                    grecaptcha.execute();
+                </script>
+                """,
+                unsafe_allow_html=True
+            )
         
 with right_column:
-    if submit_button:
-        if recaptcha_response:
-            # Verify the reCAPTCHA response
-            recaptcha_verification = requests.post(
-                "https://www.google.com/recaptcha/api/siteverify",
-                data={
-                    "secret": RECAPTCHA_SECRET_KEY,
-                    "response": recaptcha_response
-                }
-            )
-            recaptcha_result = recaptcha_verification.json()
+    if recaptcha_response:
+        # Verify the reCAPTCHA response
+        recaptcha_verification = requests.post(
+            "https://www.google.com/recaptcha/api/siteverify",
+            data={
+                "secret": RECAPTCHA_SECRET_KEY,
+                "response": recaptcha_response
+            }
+        )
+        recaptcha_result = recaptcha_verification.json()
 
-            if recaptcha_result.get("success"):
-                user_profile = {
-                    "name": name,
-                    "age": age,
-                    "employment_status": employment_status,
-                    "annual_income": annual_income,
-                    "monthly_expenses": monthly_expenses,
-                    "savings": savings,
-                    "investments": investments,
-                    "risk_tolerance": risk_tolerance,
-                    "investment_goals": investment_goals,
-                    "investment_horizon": investment_horizon,
-                    "preferred_investments": preferred_investments,
-                    "current_debts": current_debts,
-                    "country": country
-                }
+        if recaptcha_result.get("success"):
+            user_profile = {
+                "name": name,
+                "age": age,
+                "employment_status": employment_status,
+                "annual_income": annual_income,
+                "monthly_expenses": monthly_expenses,
+                "savings": savings,
+                "investments": investments,
+                "risk_tolerance": risk_tolerance,
+                "investment_goals": investment_goals,
+                "investment_horizon": investment_horizon,
+                "preferred_investments": preferred_investments,
+                "current_debts": current_debts,
+                "country": country
+            }
 
-                st.write("User Profile Submitted")
-                st.json(user_profile)
+            st.write("User Profile Submitted")
+            st.json(user_profile)
 
-                # Prepare data to send to the OpenAI API
-                data_to_send = {
-                    "model": "gpt-4",
-                    "messages": [
-                        {"role": "system", "content": "You are a financial advisor who provides detailed and specific investment advice based on user profiles."},
-                        {"role": "user", "content": f"""
-                        Provide detailed investment advice based on the following user profile:
+            # Prepare data to send to the OpenAI API
+            data_to_send = {
+                "model": "gpt-4",
+                "messages": [
+                    {"role": "system", "content": "You are a financial advisor who provides detailed and specific investment advice based on user profiles."},
+                    {"role": "user", "content": f"""
+                    Provide detailed investment advice based on the following user profile:
 
-                        Name: {name}
-                        Age: {age}
-                        Employment Status: {employment_status}
-                        Annual Income: ${annual_income:,}
-                        Monthly Expenses: ${monthly_expenses:,}
-                        Current Savings: ${savings:,}
-                        Current Investments: ${investments:,}
-                        Current Debts: ${current_debts:,}
-                        Risk Tolerance: {risk_tolerance}
-                        Investment Goals: {", ".join(investment_goals)}
-                        Investment Horizon: {investment_horizon}
-                        Preferred Investments: {", ".join(preferred_investments)}
-                        Country: {country}
+                    Name: {name}
+                    Age: {age}
+                    Employment Status: {employment_status}
+                    Annual Income: ${annual_income:,}
+                    Monthly Expenses: ${monthly_expenses:,}
+                    Current Savings: ${savings:,}
+                    Current Investments: ${investments:,}
+                    Current Debts: ${current_debts:,}
+                    Risk Tolerance: {risk_tolerance}
+                    Investment Goals: {", ".join(investment_goals)}
+                    Investment Horizon: {investment_horizon}
+                    Preferred Investments: {", ".join(preferred_investments)}
+                    Country: {country}
 
-                        Please include specific stock recommendations, bond recommendations, mutual funds/ETFs, asset allocation strategy, risk management, tax efficiency, and income generation strategies.
-                        """}
-                    ]
-                }
+                    Please include specific stock recommendations, bond recommendations, mutual funds/ETFs, asset allocation strategy, risk management, tax efficiency, and income generation strategies.
+                    """}
+                ]
+            }
 
-                headers = {
-                    "Authorization": f"Bearer {API_KEY}",
-                    "Content-Type": "application/json"
-                }
+            headers = {
+                "Authorization": f"Bearer {API_KEY}",
+                "Content-Type": "application/json"
+            }
 
-                # Send the request to the OpenAI API
-                response = requests.post(API_ENDPOINT, headers=headers, json=data_to_send)
-                
-                if response.status_code == 200:
-                    response_data = response.json()
-                    investment_advice = response_data['choices'][0]['message']['content']
-                    st.write("Investment Advice:")
-                    st.write(investment_advice)
-                else:
-                    st.write("Error:", response.status_code)
-                    st.write(response.text)
+            # Send the request to the OpenAI API
+            response = requests.post(API_ENDPOINT, headers=headers, json=data_to_send)
+            
+            if response.status_code == 200:
+                response_data = response.json()
+                investment_advice = response_data['choices'][0]['message']['content']
+                st.write("Investment Advice:")
+                st.write(investment_advice)
             else:
-                st.error("reCAPTCHA verification failed. Please try again.")
+                st.write("Error:", response.status_code)
+                st.write(response.text)
+        else:
+            st.error("reCAPTCHA verification failed. Please try again.")
     else:
         st.error("reCAPTCHA token missing. Please complete the CAPTCHA.")
