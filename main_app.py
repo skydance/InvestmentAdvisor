@@ -85,9 +85,9 @@ with right_column:
 
             # Prepare data to send to the OpenAI API
             data_to_send = {
-                "model": "gpt-4",
+                "model": "gpt-4o",
                 "messages": [
-                    {"role": "system", "content": "You are a financial advisor who provides detailed and specific investment advice based on user profiles."},
+                    {"role": "system", "content": "You are an expert financial advisor."},
                     {"role": "user", "content": f"""
                     Provide detailed investment advice based on the following user profile:
 
@@ -105,7 +105,7 @@ with right_column:
                     Preferred Investments: {", ".join(preferred_investments)}
                     Country: {country}
 
-                    Please include specific stock recommendations, bond recommendations, mutual funds/ETFs, asset allocation strategy, risk management, tax efficiency, and income generation strategies.
+                    Please include specific stock recommendations (if chosen),  asset allocation strategy, and risk management.
                     """}
                 ]
             }
@@ -132,3 +132,4 @@ with right_column:
         captcha_text, captcha_image = generate_captcha()
         st.session_state['captcha_text'] = captcha_text
         st.session_state['captcha_image'] = captcha_image
+        st.experimental_rerun()
