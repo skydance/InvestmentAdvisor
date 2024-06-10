@@ -65,9 +65,7 @@ with left_column:
         # Display CAPTCHA and refresh button inside the form
         st.markdown(f"![CAPTCHA](data:image/png;base64,{st.session_state['captcha_image']})")
         refresh_captcha_btn = st.form_submit_button(label='Refresh CAPTCHA')
-        if refresh_captcha_btn:
-            refresh_captcha()
-            st.rerun()
+        
         
         captcha_input = st.text_input("Enter CAPTCHA")
         submit_button = st.form_submit_button(label='Submit')
@@ -152,4 +150,5 @@ with right_column:
             # Regenerate CAPTCHA if failed
             refresh_captcha()
             st.rerun()
+            
         
