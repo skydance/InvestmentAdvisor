@@ -16,7 +16,7 @@ API_KEY = st.secrets["API_KEY"]
 # Function to generate CAPTCHA
 def generate_captcha():
     image = ImageCaptcha(width=280, height=90)  # Adjust dimensions for better readability
-    captcha_text = ''.join(random.choices(string.ascii_uppercase + string.digits, k=5))
+    captcha_text = ''.join(random.choices(string.ascii_uppercase, k=5))
     captcha_image = image.generate_image(captcha_text)
     buffered = BytesIO()
     captcha_image.save(buffered, format="PNG")
