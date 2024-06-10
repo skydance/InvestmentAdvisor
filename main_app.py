@@ -67,7 +67,7 @@ with left_column:
         submit_button = st.form_submit_button(label='Submit')
     if st.button('Refresh CAPTCHA'):
         refresh_captcha()
-        st.rerun()
+        #st.rerun()
         
 with right_column:
     if submit_button:
@@ -144,5 +144,5 @@ with right_column:
             st.error("CAPTCHA verification failed. Please try again.")
             # Regenerate CAPTCHA if failed
             refresh_captcha()
-            st.rerun()
+            #st.rerun()
         
