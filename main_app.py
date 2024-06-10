@@ -26,7 +26,7 @@ def generate_captcha():
 # Refresh CAPTCHA
 def refresh_captcha():
     captcha_text, captcha_image = generate_captcha()
-    st.session_state['captcha_text'] = captcha_text
+    st.session_state['captcha_text'] = captcha_text.upper()
     st.session_state['captcha_image'] = captcha_image
 
 # Initial CAPTCHA generation
@@ -115,7 +115,7 @@ with right_column:
                     Investment Horizon: {investment_horizon}
                     Preferred Investments: {", ".join(preferred_investments)}
                     Preferred Country: {country}
-
+                    Do not include Financial Overview and
                     Please include specific stock recommendations and cryptocurrency (if chosen as preferred investments) in preferred country,  asset allocation strategy, and risk management.
                     """}
                 ]
