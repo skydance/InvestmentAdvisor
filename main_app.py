@@ -149,6 +149,6 @@ with right_column:
             st.error("CAPTCHA verification failed. Please try again.")
             # Regenerate CAPTCHA if failed
             refresh_captcha()
-            st.rerun()
-            
+            #st.rerun()
+
         
