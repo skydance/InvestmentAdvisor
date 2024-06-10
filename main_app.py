@@ -8,29 +8,31 @@ from datetime import datetime
 API_ENDPOINT = "https://api.openai.com/v1/chat/completions"
 API_KEY = st.secrets["API_KEY"]
 
-RECAPTCHA_SITE_KEY = st.secrets["RECAPTCHA_SITE_KEY"]
-RECAPTCHA_SECRET_KEY = st.secrets["RECAPTCHA_SECRET_KEY"]
+from captcha.image import ImageCaptcha
+import random
+import string
+import base64
+from io import BytesIO
 
-# HTML for reCAPTCHA
-recaptcha_html = f"""
-<div class="g-recaptcha" data-sitekey="{RECAPTCHA_SITE_KEY}" data-callback="onSubmit" data-size="invisible"></div>
-<script src="https://www.google.com/recaptcha/api.js" async defer></script>
-<script>
-    function onSubmit(token) {{
-        document.getElementById("recaptcha_response").value = token;
-        document.getElementById("profile_form").submit();
-    }}
-</script>
-"""
-# CSS to hide the reCAPTCHA response input
-hide_input_css = """
-<style>
-    .hidden-input {
-        display: none;
-    }
-</style>
-"""
-st.markdown(hide_input_css, unsafe_allow_html=True)
+# Function to generate CAPTCHA
+def generate_captcha():
+    image = ImageCaptcha()
+    captcha_text = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
+    captcha_image = image.generate_image(captcha_text)
+    buffered = BytesIO()
+    captcha_image.save(buffered, format="PNG")
+    img_str = base64.b64encode(buffered.getvalue()).decode()
+    return captcha_text, img_str
+
+# Initial CAPTCHA generation
+if 'captcha_text' not in st.session_state:
+    captcha_text, captcha_image = generate_captcha()
+    st.session_state['captcha_text'] = captcha_text
+    st.session_state['captcha_image'] = captcha_image
+
+# Display CAPTCHA
+st.markdown(f"![CAPTCHA](data:image/png;base64,{st.session_state['captcha_image']})")
+
 
 # Configure AWS S3
 s3 = boto3.client('s3')
@@ -56,34 +58,12 @@ with left_column:
         investment_horizon = st.selectbox("Investment Horizon", ["Short-term (1-3 years)", "Medium-term (3-5 years)", "Long-term (5+ years)"])
         preferred_investments = st.multiselect("Preferred Investment Types", ["Stocks", "Bonds", "Mutual Funds", "Cryptocurrency"])
         country = st.selectbox("Prefered Country to invest", ["United States", "Singapore", "Australia", "Indonesia", "Other"])
-       # Add reCAPTCHA and hidden input for the response
-        st.markdown(recaptcha_html, unsafe_allow_html=True)
-        recaptcha_response = st.text_input("recaptcha_response", type="default", value="", key="recaptcha_response_input")
-
-        # Custom submit button
-        if st.form_submit_button(label='Submit'):
-            st.markdown(
-                f"""
-                <script>
-                    grecaptcha.execute();
-                </script>
-                """,
-                unsafe_allow_html=True
-            )
+        captcha_input = st.text_input("Enter CAPTCHA")
+        submit_button = st.form_submit_button(label='Submit')
         
 with right_column:
-    if recaptcha_response:
-        # Verify the reCAPTCHA response
-        recaptcha_verification = requests.post(
-            "https://www.google.com/recaptcha/api/siteverify",
-            data={
-                "secret": RECAPTCHA_SECRET_KEY,
-                "response": recaptcha_response
-            }
-        )
-        recaptcha_result = recaptcha_verification.json()
-
-        if recaptcha_result.get("success"):
+    if submit_button:
+        if captcha_input == st.session_state['captcha_text']:
             user_profile = {
                 "name": name,
                 "age": age,
@@ -146,7 +126,10 @@ with right_column:
             else:
                 st.write("Error:", response.status_code)
                 st.write(response.text)
-        else:
-            st.error("reCAPTCHA verification failed. Please try again.")
     else:
-        st.error("reCAPTCHA token missing. Please complete the CAPTCHA.")
+        st.error("CAPTCHA verification failed. Please try again.")
+
+        # Regenerate CAPTCHA if failed
+        captcha_text, captcha_image = generate_captcha()
+        st.session_state['captcha_text'] = captcha_text
+        st.session_state['captcha_image'] = captcha_image
