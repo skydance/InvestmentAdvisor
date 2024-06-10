@@ -16,7 +16,7 @@ API_KEY = st.secrets["API_KEY"]
 # Function to generate CAPTCHA
 def generate_captcha():
     image = ImageCaptcha(width=280, height=90)  # Adjust dimensions for better readability
-    captcha_text = ''.join(random.choices(string.ascii_uppercase, k=5))
+    captcha_text = ''.join(random.choices(string.ascii_letters, k=5))
     captcha_image = image.generate_image(captcha_text)
     buffered = BytesIO()
     captcha_image.save(buffered, format="PNG")
@@ -26,7 +26,7 @@ def generate_captcha():
 # Refresh CAPTCHA
 def refresh_captcha():
     captcha_text, captcha_image = generate_captcha()
-    st.session_state['captcha_text'] = captcha_text.upper()
+    st.session_state['captcha_text'] = captcha_text
     st.session_state['captcha_image'] = captcha_image
 
 # Initial CAPTCHA generation
@@ -69,7 +69,7 @@ with left_column:
         
 with right_column:
     if submit_button:
-        if captcha_input.upper() == st.session_state['captcha_text']:
+        if captcha_input.lower() == st.session_state['captcha_text']:
             user_profile = {
                 "name": name,
                 "age": age,
@@ -115,7 +115,7 @@ with right_column:
                     Investment Horizon: {investment_horizon}
                     Preferred Investments: {", ".join(preferred_investments)}
                     Preferred Country: {country}
-                    Do not include Financial Overview and
+                    Do not includ overview or user's summary 
                     Please include specific stock recommendations and cryptocurrency (if chosen as preferred investments) in preferred country,  asset allocation strategy, and risk management.
                     """}
                 ]
