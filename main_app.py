@@ -62,7 +62,7 @@ with left_column:
         country = st.selectbox("Prefered Country to invest", ["United States", "Singapore", "Australia", "Indonesia", "Other"])
         # Display CAPTCHA
         st.markdown(f"![CAPTCHA](data:image/png;base64,{st.session_state['captcha_image']})")
-        
+        st.text_input(st.session_state['captcha_text'])
         captcha_input = st.text_input("Enter CAPTCHA")
         submit_button = st.form_submit_button(label='Submit')
     if st.button('Refresh CAPTCHA'):
@@ -71,7 +71,7 @@ with left_column:
         
 with right_column:
     if submit_button:
-        st.write(st.session_state['captcha_text'])
+        
         if captcha_input == st.session_state['captcha_text']:
             user_profile = {
                 "name": name,
