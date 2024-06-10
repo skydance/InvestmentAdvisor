@@ -3,8 +3,3 @@ s3fs
 st-files-connection
 pillow
 captcha
-random
-base64
-string
-io
-json
