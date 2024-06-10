@@ -64,7 +64,7 @@ with left_column:
         submit_button = st.form_submit_button(label='Submit')
     if st.button('Refresh CAPTCHA'):
         refresh_captcha()
-    st.rerun()
+        st.rerun()
         
 with right_column:
     if submit_button:
