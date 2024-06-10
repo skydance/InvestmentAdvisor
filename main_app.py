@@ -64,12 +64,14 @@ with left_column:
         
         # Display CAPTCHA and refresh button inside the form
         st.markdown(f"![CAPTCHA](data:image/png;base64,{st.session_state['captcha_image']})")
-        st.button('Refresh CAPTCHA', on_click=refresh_captcha)
+        refresh_captcha = st.form_submit_button(label='Refresh CAPTCHA')
+    
+        if refresh_captcha:
+            refresh_captcha()
+            st.rerun()
         captcha_input = st.text_input("Enter CAPTCHA")
         submit_button = st.form_submit_button(label='Submit')
     
-        #st.rerun()
-        
 with right_column:
     if submit_button:
         st.write("captcha_text:")
