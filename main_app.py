@@ -32,10 +32,6 @@ def refresh_captcha():
 if 'captcha_text' not in st.session_state:
     refresh_captcha()
 
-if st.button('Refresh CAPTCHA'):
-    refresh_captcha()
-    st.rerun()
-
 
 # Configure AWS S3
 s3 = boto3.client('s3')
@@ -66,6 +62,9 @@ with left_column:
         
         captcha_input = st.text_input("Enter CAPTCHA")
         submit_button = st.form_submit_button(label='Submit')
+    if st.button('Refresh CAPTCHA'):
+        refresh_captcha()
+    st.rerun()
         
 with right_column:
     if submit_button:
