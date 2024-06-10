@@ -72,8 +72,7 @@ with left_column:
         captcha_input = st.text_input("Enter CAPTCHA")
         submit_button = st.form_submit_button(label='Submit')
     
-with right_column:
-    
+with right_column:    
     if submit_button:
         st.write("captcha_text:")
         st.session_state['captcha_text']
