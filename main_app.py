@@ -58,7 +58,8 @@ with left_column:
         country = st.selectbox("Prefered Country to invest", ["United States", "Singapore", "Australia", "Indonesia", "Other"])
        # Add reCAPTCHA and hidden input for the response
         st.markdown(recaptcha_html, unsafe_allow_html=True)
-        recaptcha_response = st.text_input("recaptcha_response", type="default", key="recaptcha_response_input", value="", class_="hidden-input")
+        recaptcha_response = st.text_input("recaptcha_response", type="default", value="", key="recaptcha_response_input")
+
         submit_button = st.form_submit_button(label='Submit')
         
 with right_column:
