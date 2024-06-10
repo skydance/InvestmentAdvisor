@@ -9,6 +9,8 @@ import string
 import base64
 from io import BytesIO
 
+st.set_page_config(page_title="AI-Powered Financial Advisor", page_icon="💡")
+
 
 API_ENDPOINT = "https://api.openai.com/v1/chat/completions"
 API_KEY = st.secrets["API_KEY"]
