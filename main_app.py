@@ -126,10 +126,11 @@ with right_column:
             else:
                 st.write("Error:", response.status_code)
                 st.write(response.text)
-    else:
-        st.error("CAPTCHA verification failed. Please try again.")
-        # Regenerate CAPTCHA if failed
-        captcha_text, captcha_image = generate_captcha()
-        st.session_state['captcha_text'] = captcha_text
-        st.session_state['captcha_image'] = captcha_image
-        #st._rerun()
+        else:
+            st.error("CAPTCHA verification failed. Please try again.")
+            # Regenerate CAPTCHA if failed
+            captcha_text, captcha_image = generate_captcha()
+            st.session_state['captcha_text'] = captcha_text
+            st.session_state['captcha_image'] = captcha_image
+            st._rerun()
+        
