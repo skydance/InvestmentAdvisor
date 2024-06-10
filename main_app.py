@@ -13,8 +13,14 @@ RECAPTCHA_SECRET_KEY = st.secrets["RECAPTCHA_SECRET_KEY"]
 
 # HTML for reCAPTCHA
 recaptcha_html = f"""
-<div class="g-recaptcha" data-sitekey="{RECAPTCHA_SITE_KEY}"></div>
+<div class="g-recaptcha" data-sitekey="{RECAPTCHA_SITE_KEY}" data-callback="onSubmit" data-size="invisible"></div>
 <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+<script>
+    function onSubmit(token) {{
+        document.getElementById("recaptcha_response").value = token;
+        document.getElementById("profile_form").submit();
+    }}
+</script>
 """
 
 # Configure AWS S3
@@ -43,6 +49,7 @@ with left_column:
         country = st.selectbox("Prefered Country to invest", ["United States", "Singapore", "Australia", "Indonesia", "Other"])
         # Add reCAPTCHA
         st.markdown(recaptcha_html, unsafe_allow_html=True)
+        recaptcha_response = st.text_input("recaptcha_response", type="hidden")
         submit_button = st.form_submit_button(label='Submit')
         
 with right_column:
@@ -129,5 +136,5 @@ with right_column:
                 st.write(response.text)
         else:
             st.error("reCAPTCHA verification failed. Please try again.")
-    
-
+    else:
+            st.error("reCAPTCHA token missing. Please complete the CAPTCHA.")
