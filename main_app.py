@@ -3,16 +3,15 @@ import requests
 import json
 import boto3
 from datetime import datetime
-
-
-API_ENDPOINT = "https://api.openai.com/v1/chat/completions"
-API_KEY = st.secrets["API_KEY"]
-
 from captcha.image import ImageCaptcha
 import random
 import string
 import base64
 from io import BytesIO
+
+
+API_ENDPOINT = "https://api.openai.com/v1/chat/completions"
+API_KEY = st.secrets["API_KEY"]
 
 # Function to generate CAPTCHA
 def generate_captcha():
