@@ -22,14 +22,19 @@ def generate_captcha():
     captcha_image.save(buffered, format="PNG")
     img_str = base64.b64encode(buffered.getvalue()).decode()
     return captcha_text, img_str
-
-# Initial CAPTCHA generation
-if 'captcha_text' not in st.session_state:
+# Refresh CAPTCHA
+def refresh_captcha():
     captcha_text, captcha_image = generate_captcha()
     st.session_state['captcha_text'] = captcha_text
     st.session_state['captcha_image'] = captcha_image
 
+# Initial CAPTCHA generation
+if 'captcha_text' not in st.session_state:
+    refresh_captcha()
 
+if st.button('Refresh CAPTCHA'):
+    refresh_captcha()
+    st.rerun()
 
 
 # Configure AWS S3
@@ -58,6 +63,9 @@ with left_column:
         country = st.selectbox("Prefered Country to invest", ["United States", "Singapore", "Australia", "Indonesia", "Other"])
         # Display CAPTCHA
         st.markdown(f"![CAPTCHA](data:image/png;base64,{st.session_state['captcha_image']})")
+        if st.button('Refresh CAPTCHA'):
+            refresh_captcha()
+            st.rerun()
         captcha_input = st.text_input("Enter CAPTCHA")
         submit_button = st.form_submit_button(label='Submit')
         
@@ -99,9 +107,9 @@ with right_column:
                     Investment Goals: {", ".join(investment_goals)}
                     Investment Horizon: {investment_horizon}
                     Preferred Investments: {", ".join(preferred_investments)}
-                    Country: {country}
+                    Preferred Country: {country}
 
-                    Please include specific stock recommendations (if chosen),  asset allocation strategy, and risk management.
+                    Please include specific stock recommendations and cryptocurrency (if chosen as preferred investments) in preferred country,  asset allocation strategy, and risk management.
                     """}
                 ]
             }
@@ -116,17 +124,16 @@ with right_column:
             
             if response.status_code == 200:
                 response_data = response.json()
-                investment_advice = response_data['choices'][0]['message']['content']
-                st.write("Investment Advice:")
+                investment_advice = response_data['choices'][0]['message']['content']                
                 st.write(investment_advice)
             else:
                 st.write("Error:", response.status_code)
                 st.write(response.text)
+            # Regenerate CAPTCHA after successful submission
+            refresh_captcha()
         else:
             st.error("CAPTCHA verification failed. Please try again.")
             # Regenerate CAPTCHA if failed
-            captcha_text, captcha_image = generate_captcha()
-            st.session_state['captcha_text'] = captcha_text
-            st.session_state['captcha_image'] = captcha_image
+            refresh_captcha()
             st.rerun()
         
