@@ -79,11 +79,7 @@ with right_column:
                 "current_debts": current_debts,
                 "country": country
             }
-
-            st.write("User Profile Submitted")
-            st.json(user_profile)
-
-            # Prepare data to send to the OpenAI API
+             # Prepare data to send to the OpenAI API
             data_to_send = {
                 "model": "gpt-4o",
                 "messages": [
